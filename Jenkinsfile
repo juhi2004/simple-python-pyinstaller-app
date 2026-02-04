@@ -10,15 +10,19 @@ pipeline {
             }
         }
         stage('Test') {
-            steps {
-                bat 'python -m pytest --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
-            }
-            post {
-                always {
-                    junit 'test-reports/results.xml'
-                }
-            }
+    steps {
+        bat 'python -m pip install --upgrade pip'
+        bat 'python -m pip install pytest'
+        bat 'if not exist test-reports mkdir test-reports'
+        bat 'python -m pytest --verbose --junit-xml=test-reports/results.xml sources/test_calc.py'
+    }
+    post {
+        always {
+            junit 'test-reports/results.xml'
         }
+    }
+}
+
         stage('Deliver') {
             steps {
                 bat 'pyinstaller --onefile sources/add2vals.py'
